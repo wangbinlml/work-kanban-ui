@@ -1,0 +1,488 @@
+<template>
+  <div class="navbar">
+    <el-row class="navbar-row">
+      <el-col :span="4">
+        <div class="sidebar-logo-container">
+          <a class="sidebar-logo-link router-link-active" href="/index">
+            <img height="32px" src="../../assets/logo/logo3.png" class="sidebar-logo"></img>
+            <h1 class="sidebar-title">小熊看版 </h1>
+          </a>
+        </div>
+      </el-col>
+      <el-col :span="7">
+        <div class="app-breadcrumb" separator="/">
+          <el-form :inline="true" class="demo-form-inline">
+            <el-form-item>
+              <el-input prefix-icon="el-icon-search" v-model="keyword" placeholder="搜索工作空间, 看版"></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="default" @click="onSearchSubmit">搜索</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
+      </el-col>
+      <el-col :span="13">
+        <div class="right-menu">
+          <div class="navbar-menu">
+            <a round @click="createWorkspace()">创建工作区</a>
+            <i class="top-line"></i>
+            <a round @click="createBoard()">创建看版</a>
+            <i class="top-line"></i>
+            <!--<router-link class="link-type" :to="'/'"><i class="el-icon-bell"></i>消息中心</router-link>-->
+          </div>
+          <!--<el-menu default-active="1" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+            <el-submenu index="2">
+              <template slot="title">我的工作台</template>
+              <el-menu-item index="2-1">选项1</el-menu-item>
+              <el-menu-item index="2-2">选项2</el-menu-item>
+              <el-menu-item index="2-3">选项3</el-menu-item>
+            </el-submenu>
+          </el-menu>-->
+
+          <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
+            <div class="avatar-wrapper">
+              <img src="//image-qiniu.zuts.net/background/profile.jpg" class="user-avatar">
+              <i class="el-icon-caret-bottom"/>
+            </div>
+            <el-dropdown-menu slot="dropdown">
+              <router-link to="/user/profile">
+                <el-dropdown-item>个人中心</el-dropdown-item>
+              </router-link>
+              <el-dropdown-item @click.native="setting = true">
+                <span>邀请好友</span>
+              </el-dropdown-item>
+              <el-dropdown-item @click.native="setting = true">
+                <span>意见和建议</span>
+              </el-dropdown-item>
+              <el-dropdown-item divided @click.native="logout">
+                <span>退出登录</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </div>
+      </el-col>
+    </el-row>
+    <el-drawer
+            title="新建工作区"
+            size="20%"
+            :before-close="beforeCloseCreateWorkspace"
+            :visible.sync="workspaceDialogTableVisible">
+      <div class="tag-drawer__content" style="padding: 20px;">
+        <el-form :model="form" :rules="rules" ref="form" label-position="top">
+          <el-form-item label="工作区名称" prop="name" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off" placeholder="这是你的公司、团队或组织的名称。"></el-input>
+          </el-form-item>
+          <el-form-item label="工作区类型" prop="type" :label-width="formLabelWidth">
+            <el-select v-model="form.type" placeholder="请选择工作区类型">
+              <el-option
+                      v-for="dict in dict.type.workspace_type"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="parseInt(dict.value)"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="描述" prop="description" :label-width="formLabelWidth">
+            <el-input v-model="form.description" type="textarea" placeholder="请输入简单描述"/>
+          </el-form-item>
+        </el-form>
+        <br/>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="beforeCloseCreateWorkspace">取 消</el-button>
+          <el-button type="primary" @click="submitForm('form')">确 定</el-button>
+        </div>
+      </div>
+    </el-drawer>
+
+    <el-drawer
+            title="新建看版"
+            size="20%"
+            :before-close="beforeCloseCreateBoard"
+            :visible.sync="boardDialogTableVisible">
+      <div class="tag-drawer__content" style="padding: 20px;">
+        <el-form :model="formBoard" :rules="rulesBoard" ref="formBoard" label-position="top">
+          <el-form-item label="看版标题" prop="title" :label-width="formLabelWidth">
+            <el-input clearable v-model="formBoard.title" autocomplete="off" placeholder="填写看版标题。"></el-input>
+          </el-form-item>
+          <el-form-item label="工作区" prop="workspaceId" :label-width="formLabelWidth">
+            <el-select clearable v-model="formBoard.workspaceId" placeholder="请选择工作区">
+              <el-option :label="item.name" :value="item.id" v-for="item in workspaceList" :key="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="可见范围" prop="viewRange" :label-width="formLabelWidth">
+            <el-select clearable v-model="formBoard.viewRange" placeholder="请选择可见范围">
+              <el-option
+                      v-for="dict in dict.type.view_range"
+                      :key="dict.value"
+                      :label="dict.label"
+                      :value="dict.value"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="看版背景图片" prop="backgroundImage" :label-width="formLabelWidth">
+            <!-- mark用来确定方向的指向 -->
+            <el-select clearable v-model="formBoard.backgroundImage" placeholder="请选择看版背景图片"
+                       @change="changeSelection(formBoard)"
+                       :ref="'select'+formBoard.$index">
+              <el-option
+                      style="height: 120px"
+                      v-for="(item, idx) in dict.type.board_background"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                {{ idx + 1 }} <img :src="item.value + '?imageView2/1/w/250/h/120'" style="margin: 5px;">
+              </el-option>
+            </el-select>
+            <div v-if="formBoard.backgroundImage"><img :src="formBoard.backgroundImage + '?imageView2/1/w/250/h/120'"
+                                                       style="margin: 5px;"></div>
+          </el-form-item>
+          <el-form-item label="看版颜色" prop="defaultColor" :label-width="formLabelWidth">
+            <span class="demonstration"></span>
+            <el-color-picker v-model="formBoard.defaultColor"></el-color-picker>
+          </el-form-item>
+          <el-form-item label="描述" prop="description" :label-width="formLabelWidth">
+            <el-input clearable v-model="formBoard.description" type="textarea" placeholder="请输入简单描述"/>
+          </el-form-item>
+        </el-form>
+        <br/>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="beforeCloseCreateBoard">取 消</el-button>
+          <el-button type="primary" @click="submitBoardForm('formBoard')">确 定</el-button>
+        </div>
+      </div>
+    </el-drawer>
+  </div>
+</template>
+
+<script>
+import {addWorkspace, listWorkspace, updateWorkspace} from '@/api/board/workspace'
+import {addBoard, updateBoard} from '@/api/board/board'
+import {mapGetters} from 'vuex'
+
+export default {
+  name: "Navbar",
+  components: {},
+  dicts: ["workspace_type", "view_range", "board_background", "tag_bg_color"],
+  data() {
+    return {
+      workspaceDialogTableVisible: false,
+      boardDialogTableVisible: false,
+      keyword: "",
+      form: {
+        name: '',
+        type: '',
+        description: ''
+      },
+      formBoard: {
+        title: '',
+        workspaceId: '',
+        description: '',
+        defaultColor: null
+      },
+      formLabelWidth: '120px',
+      workspaceList: null,
+      rules: {
+        name: [
+          {required: true, message: '请填写工作区名称', trigger: 'blur'},
+          {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
+        ],
+        type: [
+          {required: true, message: '请选择工作区类型', trigger: 'change'}
+        ],
+      },
+      rulesBoard: {
+        title: [
+          {required: true, message: '请填写看版标题', trigger: 'blur'},
+          {min: 2, max: 30, message: '长度在 2 到 30 个字符', trigger: 'blur'}
+        ],
+        workspaceId: [
+          {required: true, message: '请选择工作区', trigger: 'change'}
+        ],
+        viewRange: [
+          {required: true, message: '请选择可见范围', trigger: 'change'}
+        ],
+      }
+    }
+  },
+  watch: {
+    '$store.state.user.createWorkspaceStatus'(newValue, oldValue) {
+      this.workspaceDialogTableVisible = newValue;
+    },
+    '$store.state.user.createBoardStatus'(newValue, oldValue) {
+      let json = JSON.parse(newValue);
+      if (json.status) {
+        this.formBoard.workspaceId = json.workspaceId;
+        this.createBoard();
+      } else {
+        this.boardDialogTableVisible = json.status;
+      }
+    },
+    '$store.state.user.updateBoardStatus'(data) {
+      let json = JSON.parse(data);
+      this.createBoard();
+      this.formBoard = json;
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'avatar',
+      "createWorkspaceStatus"
+    ])
+  },
+  methods: {
+    //关系方向下拉框改变事件
+    changeSelection(scope) {
+      this.$refs[`select`].$el.children[0].children[0].setAttribute('style', 'background:url(' + this.formBoard.backgroundImage + ') no-repeat;color:#fff;text-indent: -9999px;background-position: center center');
+    },
+    onSearchSubmit() {
+
+    },
+    beforeCloseCreateWorkspace() {
+      this.workspaceDialogTableVisible = false;
+      this.$store.dispatch("createWorkspace", false);
+    },
+    beforeCloseCreateBoard() {
+      this.boardDialogTableVisible = false;
+      this.resetBoardForm();
+      this.$store.dispatch("createBoard", JSON.stringify({
+        status: false
+      }));
+    },
+    createWorkspace() {
+      this.resetWorkspaceForm();
+      this.workspaceDialogTableVisible = true;
+    },
+    resetBoardForm() {
+      this.formBoard.title = "";
+      this.formBoard.description = "";
+    },
+    resetWorkspaceForm() {
+      this.form = {
+        name: '',
+        type: '',
+        description: ''
+      }
+    },
+    async createBoard() {
+      this.resetBoardForm();
+      this.workspaceList = [];
+      this.boardDialogTableVisible = true;
+      let data = await listWorkspace({
+        createBy: this.$store.getters.user.userId,
+        getBoard: false,
+        id: this.formBoard.workspaceId,
+        pageSize: 100
+      });
+      this.workspaceList = data.rows;
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.form.id) {
+            updateWorkspace(this.form).then(response => {
+              this.$modal.msgSuccess("更新成功");
+              this.workspaceDialogTableVisible = false;
+              this.$store.dispatch("refreshWorkspaceList", true);
+              //this.getList();
+            }).finally(() => {
+              this.workspaceDialogTableVisible = false;
+            });
+          } else {
+            addWorkspace(this.form).then(response => {
+              this.$modal.msgSuccess("创建成功");
+              this.workspaceDialogTableVisible = false;
+              this.$store.dispatch("refreshWorkspaceList", true);
+              //this.getList();
+            }).finally(() => {
+              this.workspaceDialogTableVisible = false;
+            });
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    submitBoardForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.formBoard.id) {
+            updateBoard(this.formBoard).then(response => {
+              this.$modal.msgSuccess("更新成功");
+              this.boardDialogTableVisible = false;
+              this.$store.dispatch("refreshBoardList", true);
+              //this.getList();
+            }).finally(() => {
+              this.boardDialogTableVisible = false;
+            });
+          } else {
+            addBoard(this.formBoard).then(response => {
+              this.$modal.msgSuccess("创建成功");
+              this.boardDialogTableVisible = false;
+              this.$store.dispatch("refreshBoardList", true);
+              //this.getList();
+            }).finally(() => {
+              this.boardDialogTableVisible = false;
+            });
+          }
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    async logout() {
+      this.$confirm('确定注销并退出系统吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$store.dispatch('LogOut').then(() => {
+          location.href = process.env.VUE_APP_CONTEXT_PATH + "index";
+        })
+      }).catch(() => {
+      });
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+.navbar {
+  height: 50px;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 21, 41, .08);
+
+  .app-breadcrumb {
+    padding-left: 34px;
+    display: inline-block;
+    vertical-align: sub;
+  }
+
+  .navbar-menu a {
+    margin-right: 20px;
+    font-size: 14px;
+    color: #303133;
+    line-height: 45px;
+  }
+
+  .navbar-row {
+    position: fixed;
+    background: white;
+    z-index: 100;
+    width: 100%;
+    box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
+  }
+
+  .navbar-menu {
+    display: inline-block;
+    vertical-align: top;
+  }
+
+  .top-line {
+    display: inline-block;
+    margin: 0 20px;
+    background-color: rgba(0, 0, 0, 0.13);
+    box-shadow: 1px 0 rgb(255 255 255 / 22%);
+    width: 1px;
+    height: 14px;
+    position: relative;
+    top: 2px;
+  }
+
+  .avatar-wrapper {
+    margin-top: 3px !important;
+    position: relative;
+    overflow: hidden;
+    height: 40px;
+  }
+
+  .avatar-wrapper .el-icon-caret-bottom {
+    cursor: pointer;
+    font-size: 12px;
+    vertical-align: text-top;
+  }
+
+  .right-menu {
+    float: right;
+    height: 100%;
+
+    &:focus {
+      outline: none;
+    }
+
+    .right-menu-item {
+      display: inline-block;
+      padding: 0 8px;
+      height: 100%;
+      font-size: 18px;
+      color: #5a5e66;
+      vertical-align: text-bottom;
+
+      &.hover-effect {
+        cursor: pointer;
+        transition: background .3s;
+
+        &:hover {
+          background: rgba(0, 0, 0, .025)
+        }
+      }
+    }
+
+    .avatar-container {
+      margin-right: 30px;
+
+      .avatar-wrapper {
+        margin-top: 5px;
+        position: relative;
+
+        .user-avatar {
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+          border-radius: 10px;
+        }
+
+        .el-icon-caret-bottom {
+          cursor: pointer;
+          right: -20px;
+          top: 25px;
+          font-size: 12px;
+        }
+      }
+    }
+  }
+}
+
+.sidebar-logo-container .sidebar-logo-link .sidebar-logo {
+  width: 32px;
+  height: 32px;
+  vertical-align: middle;
+  margin-right: 12px;
+}
+
+.sidebar-logo-container {
+  position: relative;
+  height: 50px;
+  line-height: 50px;
+  padding-left: 20px;
+  display: inline-block;
+}
+
+.sidebar-logo-container .sidebar-logo-link .sidebar-title {
+  color: #3d4757;
+  font-size: 18px;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.el-form-item {
+  margin-bottom: 0px;
+}
+
+.navbar .navbar-menu a {
+  margin-right: 0px;
+}
+</style>
