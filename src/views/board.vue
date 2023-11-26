@@ -581,7 +581,7 @@ import {listCardActivity, addCardActivity, updateCardActivity} from "@/api/board
 import {listCustomer} from "@/api/customer"
 import {listTag, addTag, updateTag, delTag} from "@/api/board/tag"
 import {cardBindTags} from "@/api/board/cardTag"
-import {Navbar} from "../layout/components";
+import {Navbar} from "../layout/components/kanban";
 import Draggable from 'vuedraggable'
 
 export default {

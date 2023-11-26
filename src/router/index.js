@@ -5,6 +5,7 @@ Vue.use(Router)
 
 /* Layout */
 import Layout from '@/layout'
+import DocsLayout from '@/layout/docs'
 /**
  * Note: 路由配置项
  *
@@ -62,12 +63,6 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/onlyoffice',
-    component: () => import('@/views/onlyoffice'),
-    hidden: true,
-    meta: { title: '文档编辑'},
-  },
-  {
     path: '',
     component: Layout,
     redirect: 'index',
@@ -113,6 +108,30 @@ export const constantRoutes = [
         component: () => import('@/views/customer/profile/index'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user' }
+      }
+    ]
+  },
+  {
+    path: '/docs',
+    component: DocsLayout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/docs.vue'),
+        name: 'Docs',
+        meta: { title: '文档中心', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/folder',
+    component: DocsLayout,
+    children: [
+      {
+        path: 'docs/:parentId(\\d+)',
+        component: () => import('@/views/docs/file/index.vue'),
+        name: 'Files',
+        meta: { title: '文档中心', icon: 'dashboard', affix: true }
       }
     ]
   }

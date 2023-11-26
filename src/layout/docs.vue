@@ -13,12 +13,12 @@
 </template>
 
 <script>
-  import {AppMain, Navbar, Sidebar} from './components/kanban'
+  import {AppMain, Navbar, Sidebar} from './components/docs'
   import {mapState} from 'vuex'
   import variables from '@/assets/styles/variables.scss'
 
   export default {
-    name: 'Layout',
+    name: 'DocsLayout',
     components: {
       AppMain,
       Navbar,

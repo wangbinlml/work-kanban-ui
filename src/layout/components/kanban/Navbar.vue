@@ -1,13 +1,8 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="navbar">
     <el-row class="navbar-row">
       <el-col :span="4">
-        <div class="sidebar-logo-container">
-          <a class="sidebar-logo-link router-link-active" href="/index">
-            <img height="32px" src="../../assets/logo/logo3.png" class="sidebar-logo"></img>
-            <h1 class="sidebar-title">小熊看版 </h1>
-          </a>
-        </div>
+        <logo />
       </el-col>
       <el-col :span="7">
         <div class="app-breadcrumb" separator="/">
@@ -24,41 +19,15 @@
       <el-col :span="13">
         <div class="right-menu">
           <div class="navbar-menu">
-            <a round @click="createWorkspace()">创建工作区</a>
+            <a round @click="jumpDocs()"><i class="el-icon-document"></i> 文档中心</a>
             <i class="top-line"></i>
-            <a round @click="createBoard()">创建看版</a>
+            <a round @click="createWorkspace()"><i class="el-icon-notebook-1"/> 创建工作区</a>
             <i class="top-line"></i>
-            <!--<router-link class="link-type" :to="'/'"><i class="el-icon-bell"></i>消息中心</router-link>-->
+            <a round @click="createBoard()"><i class="el-icon-reading"/> 创建看版</a>
+            <i class="top-line"></i>
+            <msgLink />
           </div>
-          <!--<el-menu default-active="1" class="el-menu-demo" mode="horizontal" @select="handleSelect">
-            <el-submenu index="2">
-              <template slot="title">我的工作台</template>
-              <el-menu-item index="2-1">选项1</el-menu-item>
-              <el-menu-item index="2-2">选项2</el-menu-item>
-              <el-menu-item index="2-3">选项3</el-menu-item>
-            </el-submenu>
-          </el-menu>-->
-
-          <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
-            <div class="avatar-wrapper">
-              <img src="//image-qiniu.zuts.net/background/profile.jpg" class="user-avatar">
-              <i class="el-icon-caret-bottom"/>
-            </div>
-            <el-dropdown-menu slot="dropdown">
-              <router-link to="/user/profile">
-                <el-dropdown-item>个人中心</el-dropdown-item>
-              </router-link>
-              <el-dropdown-item @click.native="setting = true">
-                <span>邀请好友</span>
-              </el-dropdown-item>
-              <el-dropdown-item @click.native="setting = true">
-                <span>意见和建议</span>
-              </el-dropdown-item>
-              <el-dropdown-item divided @click.native="logout">
-                <span>退出登录</span>
-              </el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
+          <userLink />
         </div>
       </el-col>
     </el-row>
@@ -158,10 +127,14 @@
 import {addWorkspace, listWorkspace, updateWorkspace} from '@/api/board/workspace'
 import {addBoard, updateBoard} from '@/api/board/board'
 import {mapGetters} from 'vuex'
+import Logo from "../Logo"
+import UserLink from "../UserLink"
+import MsgLink from "../MsgLink"
+
 
 export default {
   name: "Navbar",
-  components: {},
+  components: {Logo, UserLink, MsgLink},
   dicts: ["workspace_type", "view_range", "board_background", "tag_bg_color"],
   data() {
     return {
@@ -248,6 +221,9 @@ export default {
         status: false
       }));
     },
+    jumpDocs() {
+      this.$router.push("/docs");
+    },
     createWorkspace() {
       this.resetWorkspaceForm();
       this.workspaceDialogTableVisible = true;
@@ -330,18 +306,6 @@ export default {
           return false;
         }
       });
-    },
-    async logout() {
-      this.$confirm('确定注销并退出系统吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$store.dispatch('LogOut').then(() => {
-          location.href = process.env.VUE_APP_CONTEXT_PATH + "index";
-        })
-      }).catch(() => {
-      });
     }
   }
 }
@@ -381,6 +345,14 @@ export default {
     vertical-align: top;
   }
 
+  .right-menu {
+    float: right;
+    height: 100%;
+
+    &:focus {
+      outline: none;
+    }
+  }
   .top-line {
     display: inline-block;
     margin: 0 20px;
@@ -391,91 +363,6 @@ export default {
     position: relative;
     top: 2px;
   }
-
-  .avatar-wrapper {
-    margin-top: 3px !important;
-    position: relative;
-    overflow: hidden;
-    height: 40px;
-  }
-
-  .avatar-wrapper .el-icon-caret-bottom {
-    cursor: pointer;
-    font-size: 12px;
-    vertical-align: text-top;
-  }
-
-  .right-menu {
-    float: right;
-    height: 100%;
-
-    &:focus {
-      outline: none;
-    }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
-      font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
-    }
-
-    .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
-      }
-    }
-  }
-}
-
-.sidebar-logo-container .sidebar-logo-link .sidebar-logo {
-  width: 32px;
-  height: 32px;
-  vertical-align: middle;
-  margin-right: 12px;
-}
-
-.sidebar-logo-container {
-  position: relative;
-  height: 50px;
-  line-height: 50px;
-  padding-left: 20px;
-  display: inline-block;
-}
-
-.sidebar-logo-container .sidebar-logo-link .sidebar-title {
-  color: #3d4757;
-  font-size: 18px;
-  display: inline-block;
-  font-weight: 500;
 }
 
 .el-form-item {

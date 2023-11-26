@@ -52,12 +52,6 @@ export default {
         icon: "el-icon-delete",
         path: "/index",
         cls: "el-menu-item "
-      }, {
-        index: 6,
-        title: "文档",
-        icon: "el-icon-doc",
-        path: "/onlyoffice",
-        cls: "el-menu-item "
       }]
     }
   },
