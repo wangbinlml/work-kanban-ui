@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="card_title" v-if="boardList !=null && boardList.length>0">
+    <div class="card_title">
       <h3 class="boards-page-board-section-header-name">
         <i class="el-icon-star-off"></i>&nbsp;&nbsp;&nbsp;&nbsp;标星看板
       </h3>
@@ -11,8 +11,7 @@
         <li class="boards-page-board-section-list-item" v-for="board in boardList" :key="board.id">
           <a class="board-title" @click="toBoard(board, false)" href="javascript:void(0)"
              :style='{
-                backgroundColor: board.defaultColor,
-                backgroundImage: board.backgroundImage !=null ? "url(\"" + board.backgroundImage + "?imageView2/1/w/250/h/120\")" : ""
+                background: board.backgroundImage !=null ? "url(\"" + board.backgroundImage + "?imageView2/1/w/250/h/120\")" : board.defaultColor
             }'>
             <span class="board-title-fade"></span>
             <div class="board-title-details is-badged">
@@ -73,11 +72,11 @@
       },
       /** 查询工作区列表 */
       getList() {
-        this.loading = true;
+        this.loading = false;
         userStarBoardList(this.queryParams).then(response => {
           this.boardList = response.rows;
           this.total = response.total;
-          this.loading = false;
+          //this.loading = false;
         });
       }
     },
@@ -90,7 +89,5 @@
 
 
 <style lang="scss">
-  .el-table .el-table__header-wrapper th, .el-table .el-table__fixed-header-wrapper th {
-    background-color: white;
-  }
+
 </style>

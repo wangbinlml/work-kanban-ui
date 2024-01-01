@@ -1,6 +1,6 @@
 <template>
   <span>
-    <a round @click="jumpMsg()"><i class="el-icon-bell"/> 消息中心</a>
+    <a round @click="jumpMsg()" style="color: white"><i class="el-icon-bell"/> 消息中心</a>
     <i class="top-line"></i>
   </span>
 </template>

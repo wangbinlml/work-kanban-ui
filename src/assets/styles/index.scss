@@ -7,6 +7,7 @@
 @import './boards.scss';
 
 body {
+  overflow-x: auto;
   color: #172b4d;
   height: 100%;
   font-size: 14px;
@@ -189,15 +190,23 @@ aside {
 .multiselect--active {
   z-index: 1000 !important;
 }
-h3 {
-  color: #172b4d!important;
-}
-h4 {
-  color: #172b4d!important;
-}
 .load-more {
   cursor: pointer;
   cursor: pointer;
   text-align: center;
   color: #172b4d;
+}
+
+.el-message--error{
+  background: #00a8e8;
+  border: none;
+}
+.el-menu--horizontal > .el-menu-item {
+  color: #1f2d3d;
+}
+.el-message--error .el-message__content {
+  color: white;
+}
+.el-menu-item:hover a {
+  color: #1f2d3d;
 }

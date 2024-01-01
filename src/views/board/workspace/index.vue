@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="card_title" v-if="workspaceList !=null && workspaceList.length>0">
+    <div class="card_title">
       <h3 class="boards-page-board-section-header-name">
         <i class="el-icon-sunrise-1"></i>&nbsp;&nbsp;&nbsp;&nbsp;工作空间
       </h3>
@@ -11,8 +11,7 @@
         <li class="boards-page-board-section-list-item" v-for="work in workspaceList" :key="work.id">
           <a class="board-title" @click="toBoard(work, false)" href="javascript:void(0)"
              :style='{
-                backgroundColor: work.defaultColor,
-                backgroundImage: work.backgroundImage !=null ? "url(\"" + work.backgroundImage + "?imageView2/1/w/250/h/120\")" : ""
+                background: work.backgroundImage !=null ? "url(\"" + work.backgroundImage + "?imageView2/1/w/250/h/120\")" : work.defaultColor
             }'>
             <span class="board-title-fade"></span>
             <div class="board-title-details is-badged">
@@ -67,11 +66,11 @@
     methods: {
       /** 查询工作区列表 */
       getList() {
-        this.loading = true;
+        this.loading = false;
         listWorkspace(this.queryParams).then(response => {
           this.workspaceList = response.rows;
           this.total = response.total;
-          this.loading = false;
+          //this.loading = false;
         });
       },
       loadMore() {

@@ -3,7 +3,7 @@
     <div>
       <navbar/>
     </div>
-    <div>
+    <div class="el-content-middle">
       <sidebar/>
       <div class="main-container hasTagsView">
         <app-main/>
@@ -37,10 +37,14 @@
 <style lang="scss" scoped>
   @import "~@/assets/styles/mixin.scss";
   @import "~@/assets/styles/variables.scss";
-
+  .el-content-middle {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+  }
   .app-wrapper {
     @include clearfix;
-    position: relative;
     height: 100%;
     width: 100%;
 

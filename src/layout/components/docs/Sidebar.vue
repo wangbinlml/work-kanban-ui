@@ -186,7 +186,6 @@ export default {
 
 <style lang="scss" scoped>
 .button-item {
-  background: white;
   padding-top: 16px;
   padding-left: 16px;
 }
@@ -230,7 +229,6 @@ export default {
   -webkit-transition: width 0.28s;
   transition: width 0.28s;
   width: 200px !important;
-  background-color: #e6e6e6;
   height: 100%;
   position: fixed;
   font-size: 0px;

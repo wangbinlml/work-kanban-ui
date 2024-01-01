@@ -2,7 +2,7 @@
   <div class="sidebar-container has-logo">
     <div class="el-scrollbar theme-dark">
       <el-row class="button-item">
-        <el-button type="default" @click="createWorkspaceSideBar"><i class="el-icon-plus"></i>创建工作区</el-button>
+        <el-button type="primary" @click="createWorkspaceSideBar"><i class="el-icon-plus"></i>创建工作区</el-button>
       </el-row>
       <el-menu default-active="1" role="menubar" class="el-menu" :unique-opened="true">
         <el-menu-item index="1" @click="toDirect('/index')">
@@ -76,7 +76,6 @@ export default {
 
 <style lang="scss" scoped>
 .button-item {
-  background: white;
   padding-top: 16px;
   padding-left: 16px;
 }
@@ -114,13 +113,13 @@ export default {
   display: inline-block;
   width: 100%;
   overflow: hidden;
+  color: white;
 }
 
 #app .sidebar-container {
   -webkit-transition: width 0.28s;
   transition: width 0.28s;
   width: 200px !important;
-  background-color: #e6e6e6;
   height: 100%;
   position: fixed;
   font-size: 0px;
@@ -131,6 +130,7 @@ export default {
   overflow: hidden;
   -webkit-box-shadow: 0px 4px 6px rgb(0 21 41 / 35%);
   box-shadow: 0px 4px 6px rgb(0 21 41 / 35%);
+  background: none;
 }
 
 .el-form-item {

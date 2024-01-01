@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar-logo-container">
     <a class="sidebar-logo-link router-link-active" href="/index">
-      <img height="32px" :src=logo class="sidebar-logo"></img>
-      <h1 class="sidebar-title">小熊看版 </h1>
+      <img :xs="24" :md="12" height="32px" :src=logo class="sidebar-logo"></img>
+      <h1 :xs="24" :md="12" class="sidebar-title">小熊看版 </h1>
     </a>
   </div>
 </template>
@@ -40,7 +40,7 @@ export default {
 }
 
 .sidebar-logo-container .sidebar-logo-link .sidebar-title {
-  color: #3d4757;
+  color: white;
   font-size: 18px;
   display: inline-block;
   font-weight: 500;

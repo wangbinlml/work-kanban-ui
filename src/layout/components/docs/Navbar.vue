@@ -57,7 +57,6 @@ export default {
         description: '',
         defaultColor: null
       },
-      formLabelWidth: '120px',
       workspaceList: null,
 
       rulesBoard: {
@@ -268,5 +267,6 @@ export default {
 
 .navbar .navbar-menu a {
   margin-right: 0px;
+  color: white;
 }
 </style>

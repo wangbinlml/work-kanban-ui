@@ -174,7 +174,7 @@
         }));
       },
       async getWorkspace() {
-        this.workspaceLoading = true;
+        this.workspaceLoading = false;
         let data = await listWorkspace({
           createBy: this.$store.getters.user.userId,
           getBoard: true

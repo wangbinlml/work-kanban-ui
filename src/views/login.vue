@@ -157,7 +157,7 @@
     </div>
     <!--  底部  -->
     <div class="el-login-footer">
-      <span>Copyright © 2021-2023 zuts.net All Rights Reserved.</span>
+      <span>Copyright © 2021-2024 kb.zuts.net All Rights Reserved.</span>
     </div>
   </div>
 </template>
@@ -361,8 +361,8 @@ export default {
   background: url("../assets/images/bg2.png");
   margin: auto;
   padding: 0px 0;
-  width: 1078px;
-  height: 580px;
+  width: 80%;
+  height: 600px;
   background-size: cover;
   background-repeat: no-repeat;
   box-shadow: none;
@@ -370,7 +370,7 @@ export default {
 
 .hero-content {
   float: right;
-  margin-top: 80px;
+  margin-top: 13%;
   box-shadow: 0 8px 20px 0 rgb(0 33 70 / 10%);
   border-radius: 8px;
 }
@@ -429,7 +429,7 @@ export default {
 }
 
 .el-login-footer {
-  position: relative;
+  position: absolute;
   bottom: 5px;
   height: 40px;
   line-height: 40px;
